@@ -17,6 +17,8 @@ function [data] = predict_comp(dat_a,dat_b,varargin)
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+%% Dependencies
+% - boundedline (https://github.com/kakearney/boundedline-pkg)
 
 % set defaults in case no arguments passed to func
 default_adj         = 'no';
