@@ -21,17 +21,8 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-
-%%
-addpath 'D:\Google Drive\Arbeit\Lausanne\resting_state\Paper_Spectra\scripts\finalized_resuscitation\dependencies'
-addpath 'D:\Google Drive\Arbeit\Lausanne\resting_state\Paper_Spectra\scripts\finalized_resuscitation\dependencies\altmany-export_fig-9ac0917'
-addpath 'D:\Google Drive\Arbeit\Lausanne\resting_state\Paper_Spectra\scripts\finalized_resuscitation\dependencies\ft_boundedline\'
-addpath 'D:\Google Drive\Arbeit\Lausanne\resting_state\Paper_Spectra\scripts\finalized_resuscitation\dependencies\subaxis'
-addpath 'D:\Google Drive\Arbeit\Lausanne\resting_state\Paper_Spectra\scripts\finalized_resuscitation\dependencies\cbrewer'
-addpath 'C:\Users\tkusterm\Documents\FieldTrip\fieldtrip-20180702'
-ft_defaults
-addpath 'C:\Users\tkusterm\Documents\FieldTrip\fieldtrip-20180702\external\brewermap'
+%% Dependencies
+% - FieldTrip (http://www.fieldtriptoolbox.org/download/)
 
 %% Select groups based on day of interest
 
