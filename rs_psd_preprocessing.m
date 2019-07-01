@@ -23,7 +23,7 @@
 %% segment and preprocess data
 base_path = ''; % path where subject folders are located (don't forget backslahes)
 sub_fold  = ''; % sub-folder that will be created within the subject folder (don't forget backslahes)
-subjects  = {}; % array of subject folder names incl sub-folders for raw EEG file
+subjects  = {''}; % array of subject folder names incl sub-folders for raw EEG file
 raw_file  = ''; % file that contains the continuous data in FieldTrip format 
                % (see http://www.fieldtriptoolbox.org/reading_data/ and exemplary dataset on repository)
 for subj_iter = 1:numel(subjects)
@@ -56,10 +56,11 @@ for subj_iter = 1:numel(subjects)
     save(out_full,'data');
     %% perform artifact rejection routine
     data_orig = data;
-    % remove the early amplifier artifacts in first trials by default
-    cfg=[];
-    cfg.trials=~(data.trialinfo(:,2)<21*1200);
-    data=ft_selectdata(cfg,data);    
+%     % remove the early amplifier artifacts in first trials by default
+%     (only needed for g.tec system used by authors)
+%     cfg=[];
+%     cfg.trials=~(data.trialinfo(:,2)<21*1200);
+%     data=ft_selectdata(cfg,data);    
     % prepare a layout used for subsequent artifact rejection
     cfg = [];
     cfg.channel         = data.label;
