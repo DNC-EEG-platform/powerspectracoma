@@ -80,15 +80,20 @@ if strcmpi(cfg2.vis_rej,'trl') || strcmpi(cfg2.vis_rej,'trlchan')
     fig1=gcf;
     fig1.Position=[882 54 1028 940];
     % run artefact rejection on EEG data only
+    data_tmp               = data;
     cfg                     = [];
     cfg.method              = 'summary';%'channel';
     cfg.keepchannel         = 'yes';
-    cfg.metric              = 'absmax';%'var';
+    cfg.metric              = 'maxabs';%'var';
     cfg.layout              = lay;     % this allows for plotting
     cfg.channel             = cfgx.eeg;   % only EEG channels
-    data                    = ft_rejectvisual(cfg,data);
+    data_tmp                = ft_rejectvisual(cfg,data_tmp);
     close
-end;
+    % remove these trials from orig data
+    cfg = [];
+    cfg.trials = ismember(data.trialinfo(:,1),data_tmp.trialinfo(:,1));
+    data=ft_selectdata(cfg,data);
+end
 % split data into EEG and rest/extra data if other channels exist
 % or if specified
 if (~isempty(cfgx.eeg) && (length(cfgx.eeg) ~= length(data.label))) && (strcmpi(cfg2.vis_rej,'trlchan') || strcmpi(cfg2.vis_rej,'chan'))
@@ -123,12 +128,12 @@ if strcmpi(cfg2.vis_rej,'chan') || strcmpi(cfg2.vis_rej,'trlchan')
     if strcmpi(cfg2.vis_rej,'chan')
         cfg.keeptrial = 'yes';
     end
-    cfg.metric              = 'absmax';%'var';
+    cfg.metric              = 'maxabs';%'var';
     cfg.layout              = lay;     % this allows for plotting
-    cfg.channel             = 'all';   % only EEG channels
+    cfg.channel             = 'all';   
     data_eeg                = ft_rejectvisual(cfg,data_eeg);
     close
-end;
+end
 % reject the same trials also in data_extra (e.g. EOG, ECG)
 cfg=[];
 cfg.trials = ismember(data_extra.trialinfo(:,1),data_eeg.trialinfo(:,1));
@@ -180,7 +185,7 @@ elseif strcmpi(cfg2.threshold,'yes') && isfield(cfg2,'thresholdval') && isfield(
     answer.min_trial=cfg2.thresholdmin;
     answer.trials=cfg2.thresholdtrials;
     answer.channels=cfg2.thresholdchannel;
-end;
+end
 if strcmpi(cfg2.threshold,'yes')
     if strcmpi(answer.trials,'yes')
         below_thresh_trial =  cellfun(@(x) max(max(abs(x(~ismember(data.label,{'EOGH','EOGV','ECG'}),:))))<answer.threshold,data.trial,'UniformOutput',false);
@@ -206,6 +211,6 @@ if strcmpi(cfg2.threshold,'yes')
         cfg.channel = {data.label{below_thresh_channel},'EOGH','EOGV','ECG'};
         data = ft_selectdata(cfg,data);
     end
-end;
+end
 clear data_eeg data_extra;
 end

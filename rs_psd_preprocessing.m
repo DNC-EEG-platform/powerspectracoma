@@ -1,4 +1,4 @@
-%     Preprocessing script that will segent data, filter the, allow for 
+%     Preprocessing script that will segment data and filter data, allowing for 
 %     artifact rejection and independent component analysis
 %
 %     Copyright (C) 2019, Thomas Kustermann and Marzia De Lucia
@@ -22,16 +22,18 @@
 % - inputsdlg (https://www.mathworks.com/matlabcentral/fileexchange/25862-inputsdlg-enhanced-input-dialog-box)
 %% segment and preprocess data
 base_path = ''; % path where subject folders are located (don't forget backslahes)
-sub_fold = ''; % sub-folder that will be created within the subject folder (don't forget backslahes)
+sub_fold  = ''; % sub-folder that will be created within the subject folder (don't forget backslahes)
 subjects  = {}; % array of subject folder names incl sub-folders for raw EEG file
+raw_file  = ''; % file that contains the continuous data in FieldTrip format 
+               % (see http://www.fieldtriptoolbox.org/reading_data/ and exemplary dataset on repository)
 for subj_iter = 1:numel(subjects)
-    disp(['Loading data from: ',base_path,subjects{subj_iter},'raw_data.mat']);
-    load([base_path,subjects{subj_iter},'raw_data.mat'])
+    disp(['Loading data from: ',base_path,subjects{subj_iter},raw_file]);
+    data = load([base_path,subjects{subj_iter},raw_file]);
     
     % segment data into epochs
     cfg                = [];
     cfg.length         = 5;
-    data_ref           = ft_redefinetrial(cfg, data_all);
+    data_ref           = ft_redefinetrial(cfg, data);
     data_ref.trialinfo = data_ref.sampleinfo;
     
     % remove the line noise using a BS filter and demean data
@@ -77,11 +79,12 @@ for subj_iter = 1:numel(subjects)
     cfg2.ylim           = [-25 25];
     cfg2.ecgscale       = .05;
     % add data for thres and vis_rej
-    cfg2.vis_rej='chan';
+    cfg2.vis_rej='trlchan';
     data = my_artefactremoval2(cfg,data,cfg2);
+    
     % save data
-    disp(['Saving to: ', [base_path,subjects{subj_iter},sub_fold,'\data_art.mat']])
-    save([base_path,subjects{subj_iter},sub_fold,'\data_art.mat'],'data','lay');
+    disp(['Saving to: ', [base_path,subjects{subj_iter},sub_fold,'data_art.mat']])
+    save([base_path,subjects{subj_iter},sub_fold,'data_art.mat'],'data','lay');
     %% perform ICA
     cfg = [];
     cfg.channel = {'EEG'};
@@ -108,7 +111,7 @@ for subj_iter = 1:numel(subjects)
     comp              = ft_componentanalysis(cfg,data_fs);
     %save
     disp(['Saving data to: ',base_path,subjects{subj_iter},sub_fold,'data_comp.mat']);
-    save([base_path,subjects{subj_iter},sub_fold,'\data_comp.mat'],'comp','lay');
+    save([base_path,subjects{subj_iter},sub_fold,'data_comp.mat'],'comp','lay');
     keep subj_iter subjects base_path sub_fold
     disp(sprintf('\n\n%i/%i DATASETS PROCESSED\n\n',subj_iter,numel(subjects)))
 end
@@ -185,7 +188,7 @@ for subj_iter = 1:numel(subjects)
     data=ft_appenddata([],data,data_extra);
     data.fsample=data_extra.fsample;
     % save data
-    disp(['Saving data to: ',[base_path,subjects{subj_iter},sub_fold,'/data_ica.mat']]);
+    disp(['Saving data to: ',[base_path,subjects{subj_iter},sub_fold,'data_ica.mat']]);
     mkdir([base_path,subjects{subj_iter},sub_fold])
     save([base_path,subjects{subj_iter},sub_fold,'data_ica.mat'],'data','lay');
     %%  visually rejection of artifacts as ICA rejections can induce aberrations in previously existing trl-chan structure
@@ -233,7 +236,7 @@ for subj_iter = 1:numel(subjects)
     cfg.layout         = lay;%filename of the layout, see FT_PREPARE_LAYOUT
     neighbours         = ft_prepare_neighbours(cfg);
     
-    chans=load('gtec_gamma_62+3chans.mat');
+    chans=load('gtec_gamma_62+3chans.mat','channames');
     cfg = [];
     cfg.layout         = lay;
     cfg.missingchannel = chans(~ismember(chans,data.label));
@@ -244,10 +247,7 @@ for subj_iter = 1:numel(subjects)
     cfg.reref = 'yes';
     cfg.refchannel = {data.label{~ismember(data.label,{'EOGH','EOGV','ECG'})}};
     data=ft_preprocessing(cfg,data);
-    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%% FILENAME CHANGED %%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % save
     out_full = [base_path,subjects{subj_iter},sub_fold];
     mkdir(out_full)
     disp(['Saving data to: ',out_full,'data_interp.mat']);
