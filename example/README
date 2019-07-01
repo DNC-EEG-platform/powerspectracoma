@@ -1,1 +1,1 @@
-This is an exemplar dataset from our database containing a 60 second snippet of resting EEG recordings in a FieldTrip compatible format.
+data_brief.mat contains an exemplar dataset from our database with a 60 second snippet of resting EEG recordings in a FieldTrip compatible format.
