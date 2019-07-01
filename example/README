@@ -1,0 +1,12 @@
+data_brief.mat contains an exemplar dataset from our database with a 60 second snippet of resting EEG recordings in a FieldTrip compatible format.
+
+Structure should look like:
+
+data = 
+  struct with fields:
+         label: {66×1 cell}         --- electrode labels (i.e. 63 EEG, 2 EOG, 1 ECG)
+    sampleinfo: [48001 120001]      --- time stamps of recording (begin and end)
+         trial: {[66×72001 double]} --- actual continuous data (electrode by time)
+          time: {[1×72001 double]}  --- time points in seconds
+           cfg: [1×1 struct]        --- cfg from fieldTrip (log-keeping), can be empty at beginning
+       fsample: 1200                --- sampling rate of recording
