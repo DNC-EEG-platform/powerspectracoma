@@ -1,4 +1,4 @@
-function ft_boundedline_nightly(cfg,cfg2,data,varargin)
+function ft_boundedline(cfg,cfg2,data,varargin)
 %     ft_boundedline plots boundaries of data or individual underlying data
 %     ft_boundedline(cfg,cfg2,data1,data2,data3,...) with at least one data input.
 %     Input data must be frequency or time-lock data FT data.
@@ -30,12 +30,8 @@ function ft_boundedline_nightly(cfg,cfg2,data,varargin)
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-addpath(genpath('D:\Matlab functions\boundedline-pkg-master'))
 
 % gather all data in one variable
-% for i = 1:length(varargin)
-%     data={data,varargin{i}};
-% end;
 data = {data,varargin{:}};
 
 
@@ -63,7 +59,7 @@ cfg.viewmode = ft_getopt(cfg,'viewmode','bounded');
 if numel(data) >= 2 && strcmpi(cfg.viewmode,'indiv')
     cfg.viewmode = 'bounded';
     warning('More than one data input not supported for "indiv", outputting as "bounded"')
-end;
+end
 % make upper and lower boundaries
 cfg.cilevel = [(1-cfg.cilevel)/2 cfg.cilevel+(1-cfg.cilevel)/2];
 % set colors
@@ -91,7 +87,7 @@ elseif strcmp('rpt_chan_time',data{1}.dimord)
     end
 % use chans as rpt
 elseif strcmp('chan_time',data{1}.dimord) || strcmp('chan_freq',data{1}.dimord)
-    for i = 1:numel(data);
+    for i = 1:numel(data)
         dat{i} = reshape(data{i}.avg,size(data{i}.avg,1),1,size(data{i}.avg,2));
     end
 end
@@ -121,4 +117,4 @@ fig_tmp=gca;
 fig_tmp.XLim = [x_val(1) x_val(end)];
 if isfield(cfg, 'ylim')
     fig_tmp.YLim = [cfg.ylim(1) cfg.ylim(2)];
-end;
+end
