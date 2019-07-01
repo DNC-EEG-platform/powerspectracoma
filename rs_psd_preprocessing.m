@@ -31,25 +31,24 @@ for subj_iter = 1:numel(subjects)
     data = load([base_path,subjects{subj_iter},raw_file]);
     
     % segment data into epochs
-    cfg                = [];
-    cfg.length         = 5;
-    data_ref           = ft_redefinetrial(cfg, data);
-    data_ref.trialinfo = data_ref.sampleinfo;
-    
     % remove the line noise using a BS filter and demean data
     cfg = [];
     cfg.demean = 'yes';    
     cfg.bsfilter = 'yes';
     cfg.bsfreq = [45 55; 95 105; 145 155];
     cfg.bsfilttype = 'firws';
-    cfg.padding = 10;
-    data=ft_preprocessing(cfg,data_ref);
+    data=ft_preprocessing(cfg,data);
+    
+    % segment data into epochs
+    cfg                = [];
+    cfg.length         = 5;
+    data               = ft_redefinetrial(cfg, data);
+    data.trialinfo     = data.sampleinfo;
     
     % downsample data to 500Hz to save computational space and time
     cfg = [];
     cfg.resamplefs = 500;
     data=ft_resampledata(cfg,data);
-    % use specific folder according to segment length
     
     mkdir([base_path,subjects{subj_iter},sub_fold])
     out_full = [base_path,subjects{subj_iter},sub_fold,'data_segm.mat'];
